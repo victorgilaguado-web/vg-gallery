@@ -62,7 +62,7 @@ function thumb(url){
 function load(){
   Promise.all([
     api('days','GET','project_id=eq.'+PID+'&order=sort_order').catch(function(){return[];}),
-    api('photos','GET','project_id=eq.'+PID+'&order=sort_order').catch(function(){return[];}),
+    api('photos','GET','order=sort_order').catch(function(){return[];}),
     api('moodboard','GET','project_id=eq.'+PID).catch(function(){return[];})
   ]).then(function(r){
     S.days=r[0]||[]; S.photos=r[1]||[]; S.mb=r[2]||[];
@@ -71,6 +71,13 @@ function load(){
     }));
   }).then(function(la){
     S.days.forEach(function(d,i){d.looks=la[i]||[];});
+    // Collect all look_ids so we can filter photos
+    var allLookIds={};
+    S.days.forEach(function(d){
+      if(d.looks)d.looks.forEach(function(l){allLookIds[l.id]=true;});
+    });
+    // Keep only photos that belong to a known look
+    S.photos=S.photos.filter(function(p){return !p.look_id||allLookIds[p.look_id];});
     if(S.days.length){
       S.aDay=S.days[0].id;
       if(S.days[0].looks.length)S.aLook=S.days[0].looks[0].id;
