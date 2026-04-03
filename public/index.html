@@ -51,9 +51,11 @@ function loadAll(){
   }).then(function(la){
     for(var i=0;i<D.days.length;i++){D.days[i].looks=la[i]||[];}
     if(D.days.length>0){D.aDay=D.days[0].id;if(D.days[0].looks.length>0)D.aLook=D.days[0].looks[0].id;}
+    // Load project settings then render (R() always called)
     sb('projects','GET','id=eq.'+D.projectId).then(function(p){
       if(p&&p[0]){D.proj.name=p[0].name||'VG Studio Gallery';D.proj.clientLogo=p[0].client_logo||null;}
-    }).catch(function(){}).then(function(){R();});
+      R();
+    }).catch(function(){R();});
   }).catch(function(e){document.getElementById('APP').innerHTML='<div class="loading">Error: '+e.message+'</div>';});
 }
 /* Save star/color/note to Supabase */
