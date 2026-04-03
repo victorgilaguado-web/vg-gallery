@@ -87,7 +87,7 @@ function hMD(pid,col){var o='';for(var i=0;i<3;i++){var a=col===i;o+='<div style
 
 function thumbUrl(url){
   /* Cloudinary: insert w_400,q_auto for thumbnails */
-  if(url&&url.indexOf('cloudinary.com')>-1){return url.replace('/upload/','/upload/w_600,q_auto:good,f_auto/');}
+  if(url&&url.indexOf('cloudinary.com')>-1){return url.replace('/upload/','/upload/w_800,q_auto,f_auto/');}
   return url;
 }
 
@@ -109,27 +109,26 @@ function hG(photos){
 }
 
 
-/* Filter bar builder */
+/* Filter bar builder - uses data-fv to avoid quote escaping issues */
 function buildFilterBar(filt,shown,total){
   var h='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 20px;border-bottom:.5px solid #222;flex-wrap:wrap;gap:4px">';
   h+='<div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">';
   for(var s=5;s>=1;s--){
     var active=filt==='s'+s;
     var stars='';for(var ss=0;ss<s;ss++)stars+='★';
-    h+='<button onclick="xF(\'s'+s+'\')" style="padding:5px 10px;font-size:12px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:'+(active?'#fff':'transparent')+';color:'+(active?'#000':'#555')+'">'+stars+'</button>';
+    h+='<button class="flt-btn" data-fv="s'+s+'" style="padding:5px 10px;font-size:12px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:'+(active?'#fff':'transparent')+';color:'+(active?'#000':'#555')+'">'+stars+'</button>';
   }
   var cols=[['c0','#E74C3C'],['c1','#F39C12'],['c2','#2ECC71']];
   for(var c=0;c<cols.length;c++){
     var ca=filt===cols[c][0];
-    h+='<button onclick="xF(\''+cols[c][0]+'\')" style="padding:5px 10px;font-size:16px;border:none;border-radius:6px;cursor:pointer;line-height:1;background:'+(ca?cols[c][1]:'transparent')+';color:'+(ca?'#000':cols[c][1])+'">●</button>';
+    h+='<button class="flt-btn" data-fv="'+cols[c][0]+'" style="padding:5px 10px;font-size:16px;border:none;border-radius:6px;cursor:pointer;line-height:1;background:'+(ca?cols[c][1]:'transparent')+';color:'+(ca?'#000':cols[c][1])+'">●</button>';
   }
   var na=filt==='notes';
-  h+='<button onclick="xF(\'notes\')" style="padding:5px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:'+(na?'#fff':'transparent')+';color:'+(na?'#000':'#555')+'">NOTAS</button>';
-  if(filt)h+='<button onclick="xF(null)" style="padding:5px 8px;font-size:14px;background:transparent;color:#444;border:none;cursor:pointer">&times;</button>';
+  h+='<button class="flt-btn" data-fv="notes" style="padding:5px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:'+(na?'#fff':'transparent')+';color:'+(na?'#000':'#555')+'">NOTAS</button>';
+  if(filt)h+='<button class="flt-btn" data-fv="__clear__" style="padding:5px 8px;font-size:14px;background:transparent;color:#444;border:none;cursor:pointer">&times;</button>';
   h+='</div><span style="font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase">'+shown+'/'+total+'</span></div>';
   return h;
 }
-
 
 /* Edit session name inline */
 function editName(el){
@@ -314,6 +313,16 @@ function R(){
 }
 
 window.onload=loadAll;
+
+/* Event delegation for filter buttons */
+document.addEventListener('click',function(e){
+  var btn=e.target.closest ? e.target.closest('.flt-btn') : null;
+  if(!btn && e.target.classList && e.target.classList.contains('flt-btn')) btn=e.target;
+  if(btn){
+    var v=btn.getAttribute('data-fv');
+    xF(v==='__clear__'?null:v);
+  }
+});
 </script>
 </body>
 </html>
