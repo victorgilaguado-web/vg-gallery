@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VG Gallery Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px;max-width:800px;margin:0 auto}
+h1{font-size:20px;font-weight:300;margin-bottom:4px}
+.sub{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+.section{background:#111;border:.5px solid #222;border-radius:12px;padding:20px;margin-bottom:16px}
+.section h2{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px}
+label{display:block;font-size:11px;color:#666;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+input[type=text],select{width:100%;background:#0a0a0a;border:.5px solid #333;border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;font-family:inherit}
+.btn{display:inline-block;padding:10px 20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:#fff;color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:hover{background:#ddd}
+.btn-sm{padding:8px 16px;font-size:10px;background:#222;color:#aaa;border:.5px solid #333}
+.btn-sm:hover{background:#333;color:#fff}
+.row{display:flex;gap:12px;margin-bottom:12px;align-items:flex-end}
+.row>div{flex:1}
+.drop{border:2px dashed #333;border-radius:12px;padding:60px 40px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s}
+.drop:hover,.drop.over{border-color:#2ECC71}
+.drop-text{font-size:12px;color:#555;letter-spacing:2px;text-transform:uppercase}
+.drop-sub{font-size:10px;color:#333;margin-top:8px}
+.progress{height:6px;background:#222;border-radius:3px;margin-top:8px;overflow:hidden}
+.progress-bar{height:100%;background:#2ECC71;transition:width .3s;width:0%}
+.file-list{max-height:300px;overflow-y:auto;margin-top:12px}
+.file-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid #1a1a1a;font-size:11px;color:#888}
+.st{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:4px}
+.st.done{color:#2ECC71;background:rgba(46,204,113,.1)}
+.st.err{color:#E74C3C;background:rgba(231,76,60,.1)}
+.st.up{color:#F39C12;background:rgba(243,156,18,.1)}
+.log{background:#050505;border:.5px solid #222;border-radius:8px;padding:12px;font-size:10px;color:#666;max-height:200px;overflow-y:auto;margin-top:12px;font-family:monospace;white-space:pre-wrap;line-height:1.6}
+.existing{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:4px;margin-top:12px}
+.existing img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:#222}
+.toast{position:fixed;bottom:24px;right:24px;background:#2ECC71;color:#000;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;display:none}
+.toast.show{display:block}
+.toast.error{background:#E74C3C;color:#fff}
+</style>
+</head>
+<body>
+<h1>VG Gallery Admin</h1>
+<div class="sub">Upload & manage photos</div>
+
+<div class="section">
+<h2>1. Select Day & Look</h2>
+<div class="row">
+  <div><label>Day</label><select id="daySelect"></select></div>
+  <div><label>Look</label><select id="lookSelect"></select></div>
+</div>
+<div class="row">
+  <div><label>New Day Name</label><input type="text" id="newDayName" placeholder="e.g. Day 2"></div>
+  <div><button class="btn btn-sm" id="btnAddDay">+ Add Day</button></div>
+</div>
+<div class="row">
+  <div><label>New Look Name</label><input type="text" id="newLookName" placeholder="e.g. Look 02"></div>
+  <div><button class="btn btn-sm" id="btnAddLook">+ Add Look</button></div>
+</div>
+</div>
+
+<div class="section">
+<h2>2. Upload Photos</h2>
+<div class="drop" id="dropzone">
+  <div class="drop-text">Drop photos here or click to select</div>
+  <div class="drop-sub">JPG, PNG — Select a Day & Look first</div>
+</div>
+<input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="file-list" id="fileList"></div>
+<div class="log" id="log">Ready.
+</div>
+</div>
+
+<div class="section">
+<h2>Photos in this Look</h2>
+<div id="existingPhotos"><span style="font-size:11px;color:#555">Select a day & look above</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SB='https://rdzjbvkzpusegtyudhtn.supabase.co';
+var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkempidmt6cHVzZWd0eXVkaHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMTU0MDEsImV4cCI6MjA5MDc5MTQwMX0.25id5riBB8LHywjLcXOZC8te62MnL-LvICF6Dfv9jDI';
+var CN='dfkxnfxof';
+var CP='ut6grqjj';
+var PID='00000000-0000-0000-0000-000000000001';
+var days=[],aLooks={};
+
+function L(m){var e=document.getElementById('log');e.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';e.scrollTop=9999;}
+function T(m,err){var e=document.getElementById('toast');e.textContent=m;e.className='toast show'+(err?' error':'');setTimeout(function(){e.className='toast';},3000);}
+
+function api(table,method,params,body){
+  var url=SB+'/rest/v1/'+table;
+  if(params)url+='?'+params;
+  var h={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
+  if(method==='POST')h['Prefer']='return=representation';
+  if(method==='PATCH')h['Prefer']='return=minimal';
+  var o={method:method||'GET',headers:h};
+  if(body)o.body=JSON.stringify(body);
+  return fetch(url,o).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error(r.status+': '+t);});
+    if(method==='PATCH'||method==='DELETE')return null;
+    return r.json();
+  });
+}
+
+function loadData(){
+  L('Loading days...');
+  api('days','GET','project_id=eq.'+PID+'&order=sort_order').then(function(d){
+    days=d||[];
+    document.getElementById('daySelect').innerHTML=days.map(function(x){return '<option value="'+x.id+'">'+x.name+'</option>';}).join('');
+    L('Loaded '+days.length+' days');
+    if(days.length)onDayChange();
+  }).catch(function(e){L('ERROR: '+e.message);T('Error loading',true);});
+}
+
+function onDayChange(){
+  var did=document.getElementById('daySelect').value;
+  if(!did)return;
+  api('looks','GET','day_id=eq.'+did+'&order=sort_order').then(function(lk){
+    aLooks[did]=lk||[];
+    document.getElementById('lookSelect').innerHTML=(lk||[]).map(function(x){return '<option value="'+x.id+'">'+x.name+'</option>';}).join('');
+    L('Loaded '+(lk||[]).length+' looks');
+    loadPhotos();
+  }).catch(function(e){L('ERROR: '+e.message);});
+}
+
+function loadPhotos(){
+  var lid=document.getElementById('lookSelect').value;
+  if(!lid)return;
+  api('photos','GET','look_id=eq.'+lid+'&order=sort_order').then(function(p){
+    var el=document.getElementById('existingPhotos');
+    if(!p||!p.length){el.innerHTML='<span style="color:#555;font-size:11px">No photos yet</span>';return;}
+    el.innerHTML='<div style="color:#555;font-size:10px;margin-bottom:8px">'+p.length+' photos</div><div class="existing">'+p.map(function(x){var u=x.url;if(u&&u.indexOf('cloudinary')>-1)u=u.replace('/upload/','/upload/w_100,q_auto,f_auto/');return '<img src="'+u+'" loading="lazy"/>';}).join('')+'</div>';
+  }).catch(function(e){L('ERROR: '+e.message);});
+}
+
+document.getElementById('btnAddDay').addEventListener('click',function(){
+  var name=document.getElementById('newDayName').value.trim();
+  if(!name){T('Enter a day name',true);return;}
+  L('Creating day: '+name);
+  api('days','POST',null,{project_id:PID,name:name,sort_order:days.length}).then(function(){
+    T('Day "'+name+'" created!');L('Day created');
+    document.getElementById('newDayName').value='';
+    loadData();
+  }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+});
+
+document.getElementById('btnAddLook').addEventListener('click',function(){
+  var did=document.getElementById('daySelect').value;
+  var name=document.getElementById('newLookName').value.trim();
+  if(!did){T('Select a day first',true);return;}
+  if(!name){T('Enter a look name',true);return;}
+  L('Creating look: '+name);
+  api('looks','POST',null,{day_id:did,name:name,sort_order:(aLooks[did]||[]).length}).then(function(){
+    T('Look "'+name+'" created!');L('Look created');
+    document.getElementById('newLookName').value='';
+    onDayChange();
+  }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+});
+
+document.getElementById('daySelect').addEventListener('change',onDayChange);
+document.getElementById('lookSelect').addEventListener('change',loadPhotos);
+
+var dz=document.getElementById('dropzone');
+var fi=document.getElementById('fileInput');
+dz.addEventListener('click',function(){fi.click();});
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');doUpload(e.dataTransfer.files);});
+fi.addEventListener('change',function(){if(fi.files.length)doUpload(fi.files);});
+
+function doUpload(files){
+  var did=document.getElementById('daySelect').value;
+  var lid=document.getElementById('lookSelect').value;
+  if(!did||!lid){T('Select Day & Look first!',true);return;}
+  var list=document.getElementById('fileList');
+  var bar=document.getElementById('progressBar');
+  var total=files.length,done=0;
+  list.innerHTML='';bar.style.width='0%';
+  L('Uploading '+total+' photos...');
+  for(var i=0;i<total;i++){
+    (function(file,idx){
+      var item=document.createElement('div');
+      item.className='file-item';
+      item.innerHTML='<span>'+file.name+'</span><span class="st up">uploading</span>';
+      list.appendChild(item);
+      var fd=new FormData();
+      fd.append('file',file);
+      fd.append('upload_preset',CP);
+      fetch('https://api.cloudinary.com/v1_1/'+CN+'/image/upload',{method:'POST',body:fd})
+      .then(function(r){if(!r.ok)throw new Error('Cloudinary '+r.status);return r.json();})
+      .then(function(data){
+        if(data.error)throw new Error(data.error.message);
+        L('Cloudinary OK: '+file.name);
+        return api('photos','POST',null,{look_id:lid,day_id:did,url:data.secure_url,label:file.name.replace(/\.[^.]+$/,''),sort_order:idx,stars:0});
+      })
+      .then(function(){
+        item.querySelector('.st').className='st done';item.querySelector('.st').textContent='done';
+        done++;bar.style.width=Math.round(done/total*100)+'%';
+        L('OK '+file.name);
+        if(done===total){T(total+' photos uploaded!');loadPhotos();}
+      })
+      .catch(function(e){
+        item.querySelector('.st').className='st err';item.querySelector('.st').textContent='error';
+        done++;bar.style.width=Math.round(done/total*100)+'%';
+        L('FAIL '+file.name+': '+e.message);T(e.message,true);
+      });
+    })(files[i],i);
+  }
+}
+
+document.getElementById('newDayName').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnAddDay').click();});
+document.getElementById('newLookName').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnAddLook').click();});
+
+loadData();
+</script>
+</body>
+</html>
