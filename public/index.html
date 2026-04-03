@@ -30,34 +30,29 @@ function sb(table,method,params,body){
   if(body)opts.body=JSON.stringify(body);
   return fetch(url,opts).then(function(r){
     if(method==='PATCH')return null;
-    return r.json();
+    return r.json().then(function(d){
+      if(!r.ok)throw new Error((d&&d.message)||r.status);
+      return d;
+    });
   });
 }
 
 /* Load all data */
 function loadAll(){
-  sb('projects','GET','limit=1').then(function(projects){
-    if(!projects||!projects.length){document.getElementById('APP').innerHTML='<div class="loading">No project found. Use admin panel to create one.</div>';return;}
-    D.projectId=projects[0].id;
-    return Promise.all([
-      sb('days','GET','project_id=eq.'+D.projectId+'&order=sort_order'),
-      sb('photos','GET','order=sort_order'),
-      sb('moodboard','GET','project_id=eq.'+D.projectId)
-    ]);
-  }).then(function(res){
-    if(!res)return;
-    D.days=res[0]||[];
-    /* Load looks for each day */
-    var lookPromises=D.days.map(function(d){return sb('looks','GET','day_id=eq.'+d.id+'&order=sort_order');});
-    D.photos=res[1]||[];
-    D.mb=res[2]||[];
+  D.projectId='00000000-0000-0000-0000-000000000001';
+  Promise.all([
+    sb('days','GET','project_id=eq.'+D.projectId+'&order=sort_order').catch(function(){return[];}),
+    sb('photos','GET','order=sort_order').catch(function(){return[];}),
+    sb('moodboard','GET','project_id=eq.'+D.projectId).catch(function(){return[];})
+  ]).then(function(res){
+    D.days=res[0]||[];D.photos=res[1]||[];D.mb=res[2]||[];
+    var lookPromises=D.days.map(function(d){return sb('looks','GET','day_id=eq.'+d.id+'&order=sort_order').catch(function(){return[];});});
     return Promise.all(lookPromises);
   }).then(function(looksArrays){
-    if(!looksArrays)return;
     for(var i=0;i<D.days.length;i++){D.days[i].looks=looksArrays[i]||[];}
     if(D.days.length>0){D.aDay=D.days[0].id;if(D.days[0].looks.length>0)D.aLook=D.days[0].looks[0].id;}
     R();
-  }).catch(function(e){document.getElementById('APP').innerHTML='<div class="loading">Error loading: '+e.message+'</div>';});
+  }).catch(function(e){document.getElementById('APP').innerHTML='<div class="loading">Error: '+e.message+'</div>';});
 }
 
 /* Save star/color/note to Supabase */
