@@ -220,22 +220,22 @@ function gridHtml(photos){
   return h;
 }
 
-/* Filter bar */
+/* Filter bar - uses data-f attribute to avoid onclick quote issues */
 function filterBar(shown,total){
   var h='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px;border-bottom:.5px solid #1a1a1a;flex-wrap:wrap;gap:4px">';
-  h+='<div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">';
+  h+='<div id="fbar" style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">';
   for(var s=5;s>=1;s--){
     var key='s'+s;var a=S.filt===key;
     var stars='';for(var ss=0;ss<s;ss++)stars+='&#9733;';
-    h+='<button onclick="setFilt(\''+key+'\')" style="padding:4px 8px;font-size:11px;border:none;border-radius:5px;background:'+(a?'#fff':'transparent')+';color:'+(a?'#000':'#555')+'">'+stars+'</button>';
+    h+='<button data-f="'+key+'" style="padding:4px 8px;font-size:11px;border:none;border-radius:5px;cursor:pointer;background:'+(a?'#fff':'transparent')+';color:'+(a?'#000':'#555')+'">'+stars+'</button>';
   }
   for(var c=0;c<3;c++){
     var ck='c'+c;var ca=S.filt===ck;
-    h+='<button onclick="setFilt(\''+ck+'\')" style="padding:4px 8px;font-size:15px;border:none;border-radius:5px;background:'+(ca?COLORS[c]:'transparent')+';color:'+(ca?'#000':COLORS[c])+'">&#9679;</button>';
+    h+='<button data-f="'+ck+'" style="padding:4px 8px;font-size:15px;border:none;border-radius:5px;cursor:pointer;background:'+(ca?COLORS[c]:'transparent')+';color:'+(ca?'#000':COLORS[c])+'">&#9679;</button>';
   }
   var na=S.filt==='notes';
-  h+='<button onclick="setFilt(\'notes\')" style="padding:4px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:5px;background:'+(na?'#fff':'transparent')+';color:'+(na?'#000':'#555')+'">NOTAS</button>';
-  if(S.filt)h+='<button onclick="setFilt(null)" style="padding:4px 6px;font-size:13px;background:transparent;color:#555;border:none">&times;</button>';
+  h+='<button data-f="notes" style="padding:4px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:5px;cursor:pointer;background:'+(na?'#fff':'transparent')+';color:'+(na?'#000':'#555')+'">NOTAS</button>';
+  if(S.filt)h+='<button data-f="__clear" style="padding:4px 6px;font-size:13px;background:transparent;color:#555;border:none;cursor:pointer">&times;</button>';
   h+='</div><span style="font-size:10px;color:#444;letter-spacing:1px">'+shown+'/'+total+'</span></div>';
   return h;
 }
@@ -338,14 +338,14 @@ function render(){
       var sfk='s'+sf2;var sfa=S.sf===sfk;
       var scnt=0;for(var si2=0;si2<S.photos.length;si2++){if(parseInt(S.photos[si2].stars)===sf2)scnt++;}
       var sstar='';for(var ss3=0;ss3<sf2;ss3++)sstar+='&#9733;';
-      h+='<button onclick="setSF(\''+sfk+'\')" style="padding:4px 10px;font-size:11px;border-radius:99px;border:.5px solid '+(sfa?'#fff':'#333')+';background:'+(sfa?'#fff':'#111')+';color:'+(sfa?'#000':'#aaa')+'">'+sstar+' ('+scnt+')</button>';
+      h+='<button data-sf="'+sfk+'" style="padding:4px 10px;font-size:11px;border-radius:99px;border:.5px solid '+(sfa?'#fff':'#333')+';background:'+(sfa?'#fff':'#111')+';color:'+(sfa?'#000':'#aaa')+';cursor:pointer">'+sstar+' ('+scnt+')</button>';
     }
     for(var sc2=0;sc2<3;sc2++){
       var sck='c'+sc2;var sca=S.sf===sck;
       var scnt2=0;for(var si3=0;si3<S.photos.length;si3++){if(parseInt(S.photos[si3].color)===sc2)scnt2++;}
-      h+='<button onclick="setSF(\''+sck+'\')" style="padding:4px 10px;font-size:11px;border-radius:99px;border:.5px solid '+(sca?COLORS[sc2]:'#333')+';background:'+(sca?COLORS[sc2]:'#111')+';color:'+(sca?'#000':'#aaa')+'">&#9679; '+CLABELS[sc2]+' ('+scnt2+')</button>';
+      h+='<button data-sf="'+sck+'" style="padding:4px 10px;font-size:11px;border-radius:99px;border:.5px solid '+(sca?COLORS[sc2]:'#333')+';background:'+(sca?COLORS[sc2]:'#111')+';color:'+(sca?'#000':'#aaa')+';cursor:pointer">&#9679; '+CLABELS[sc2]+' ('+scnt2+')</button>';
     }
-    if(S.sf)h+='<button onclick="setSF(null)" style="padding:4px 8px;border-radius:99px;border:.5px solid #333;background:#111;color:#aaa">&times;</button>';
+    if(S.sf)h+='<button data-sf="__clear" style="padding:4px 8px;border-radius:99px;border:.5px solid #333;background:#111;color:#aaa;cursor:pointer">&times;</button>';
     h+='</div>';
     if(S.sf){
       var sfPhotos=[];
@@ -432,6 +432,17 @@ function uploadClientLogo(input){
 }
 
 window.onload=load;
+
+/* Global click delegation for filter buttons */
+document.addEventListener('click',function(e){
+  var t=e.target;
+  // filter bar buttons
+  var f=t.getAttribute?t.getAttribute('data-f'):null;
+  if(f!==null){setFilt(f==='__clear'?null:f);return;}
+  // summary filter buttons  
+  var sf=t.getAttribute?t.getAttribute('data-sf'):null;
+  if(sf!==null){setSF(sf==='__clear'?null:sf);return;}
+});
 </script>
 </body>
 </html>
