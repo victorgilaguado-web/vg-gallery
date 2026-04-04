@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VG Studio — Proyectos</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+
+/* Header */
+.header{height:56px;border-bottom:.5px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.header-left{display:flex;align-items:center;gap:20px}
+.vg-logo{height:38px;width:auto;filter:invert(1);opacity:.9}
+.header-divider{width:.5px;height:26px;background:#222}
+.header-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#444}
+
+/* Main */
+.main{padding:40px 32px;max-width:1100px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555}
+
+/* New project button */
+.btn-new{display:flex;align-items:center;gap:8px;padding:10px 20px;background:transparent;border:.5px solid #333;border-radius:8px;color:#888;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-new:hover{border-color:#666;color:#ccc;background:#0a0a0a}
+.btn-new svg{opacity:.6}
+
+/* Project grid */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+/* Project card */
+.project-card{background:#080808;border:.5px solid #1a1a1a;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
+.project-card:hover{border-color:#333;background:#0c0c0c;transform:translateY(-1px)}
+.project-card-thumb{height:160px;background:#0d0d0d;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.project-card-thumb img{width:100%;height:100%;object-fit:cover;opacity:.7}
+.project-card-thumb .no-thumb{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#2a2a2a}
+.project-card-thumb .photo-count{position:absolute;bottom:10px;right:10px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#666;background:rgba(0,0,0,.7);padding:3px 8px;border-radius:4px}
+.project-card-body{padding:16px}
+.project-card-name{font-size:14px;font-weight:400;color:#e0e0e0;margin-bottom:6px;letter-spacing:.2px}
+.project-card-meta{font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase}
+.project-card-actions{display:flex;gap:6px;padding:10px 16px;border-top:.5px solid #111}
+.card-btn{flex:1;padding:7px 0;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:transparent;border:.5px solid #222;border-radius:6px;color:#666;cursor:pointer;font-family:inherit;transition:all .15s}
+.card-btn:hover{border-color:#444;color:#ccc}
+.card-btn.primary{background:#fff;color:#000;border-color:#fff}
+.card-btn.primary:hover{background:#e8e8e8}
+.card-btn.danger{color:#E74C3C;border-color:#1a0808}
+.card-btn.danger:hover{border-color:#E74C3C;background:rgba(231,76,60,.08)}
+
+/* Empty state */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px;text-align:center;gap:16px;border:.5px dashed #1a1a1a;border-radius:12px}
+.empty-icon{font-size:32px;opacity:.2}
+.empty-title{font-size:13px;color:#555;letter-spacing:1px}
+.empty-sub{font-size:11px;color:#333;letter-spacing:1px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal{background:#0d0d0d;border:.5px solid #2a2a2a;border-radius:16px;padding:28px;width:420px;max-width:90vw}
+.modal h3{font-size:16px;font-weight:400;margin-bottom:6px;letter-spacing:.3px}
+.modal p{font-size:11px;color:#555;margin-bottom:24px;line-height:1.6}
+.modal input{width:100%;background:#000;border:.5px solid #2a2a2a;border-radius:8px;padding:12px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:20px;transition:border-color .15s}
+.modal input:focus{border-color:#555}
+.modal input::placeholder{color:#333}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.modal-btns button{padding:10px 20px;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s}
+.modal-cancel{background:transparent;border:.5px solid #2a2a2a;color:#666}
+.modal-cancel:hover{border-color:#444;color:#999}
+.modal-confirm{background:#fff;border:.5px solid #fff;color:#000;font-weight:600}
+.modal-confirm:hover{background:#e8e8e8}
+.modal-confirm.danger{background:#E74C3C;border-color:#E74C3C;color:#fff}
+.modal-confirm.danger:hover{background:#c0392b}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#2ECC71;color:#000;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#E74C3C;color:#fff}
+
+/* Loading */
+.spinner{width:20px;height:20px;border:2px solid #222;border-top-color:#555;border-radius:50%;animation:spin .6s linear infinite;margin:60px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <img class="vg-logo" id="vgLogo" alt="VG Studio">
+    <div class="header-divider"></div>
+    <span class="header-title">Proyectos</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="section-header">
+    <span class="section-title" id="projectCount">—</span>
+    <button class="btn-new" id="btnNew">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Nuevo proyecto
+    </button>
+  </div>
+  <div id="projectsContainer"><div class="spinner"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SB='https://rdzjbvkzpusegtyudhtn.supabase.co';
+var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkempidmt6cHVzZWd0eXVkaHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMTU0MDEsImV4cCI6MjA5MDc5MTQwMX0.25id5riBB8LHywjLcXOZC8te62MnL-LvICF6Dfv9jDI';
+
+// Logo
+var logoEl=document.getElementById('vgLogo');
+logoEl.onerror=function(){this.style.display='none';};
+
+function api(table,method,params,body){
+  var url=SB+'/rest/v1/'+table+(params?'?'+params:'');
+  var h={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
+  if(method==='POST')h['Prefer']='return=representation';
+  if(method==='PATCH')h['Prefer']='return=minimal';
+  return fetch(url,{method:method,headers:h,body:body?JSON.stringify(body):undefined})
+    .then(function(r){
+      if(method==='PATCH'||method==='DELETE')return null;
+      return r.json().then(function(d){if(!r.ok)throw new Error(d.message||r.status);return d;});
+    });
+}
+
+function thumb(url,w){
+  if(!url)return '';
+  if(url.indexOf('cloudinary.com')>-1)
+    return url.replace('/upload/','/upload/w_'+(w||400)+',q_auto,f_auto/');
+  return url;
+}
+
+function toast(m,err){
+  var e=document.getElementById('toast');
+  e.textContent=m;e.className='toast show'+(err?' error':'');
+  setTimeout(function(){e.className='toast';},3000);
+}
+
+function genId(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+    var r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);
+  });
+}
+
+var projects=[];
+
+function load(){
+  Promise.all([
+    api('projects','GET','order=created_at.desc'),
+    api('days','GET','order=project_id'),
+    api('photos','GET','select=id,project_id,look_id,url&order=id.desc&limit=200')
+  ]).then(function(r){
+    projects=r[0]||[];
+    var days=r[1]||[];
+    var photos=r[2]||[];
+
+    // count days per project
+    var dayCounts={};
+    days.forEach(function(d){dayCounts[d.project_id]=(dayCounts[d.project_id]||0)+1;});
+
+    // get preview photo per project (first photo from each project's looks)
+    var lookIds={};
+    // we need look->project mapping - use day->project
+    var dayToProject={};
+    days.forEach(function(d){dayToProject[d.id]=d.project_id;});
+
+    // get looks to map look->project
+    api('looks','GET','select=id,day_id').then(function(looks){
+      var lookToProject={};
+      (looks||[]).forEach(function(l){
+        var pid=dayToProject[l.day_id];
+        if(pid)lookToProject[l.id]=pid;
+      });
+
+      var photoCounts={};
+      var previewPhotos={};
+      photos.forEach(function(p){
+        var pid=lookToProject[p.look_id];
+        if(!pid)return;
+        photoCounts[pid]=(photoCounts[pid]||0)+1;
+        if(!previewPhotos[pid])previewPhotos[pid]=p.url;
+      });
+
+      document.getElementById('projectCount').textContent=projects.length+' proyecto'+(projects.length!==1?'s':'');
+      renderProjects(projects,dayCounts,photoCounts,previewPhotos);
+    }).catch(function(){
+      document.getElementById('projectCount').textContent=projects.length+' proyecto'+(projects.length!==1?'s':'');
+      renderProjects(projects,dayCounts,{},{});
+    });
+  }).catch(function(e){
+    document.getElementById('projectsContainer').innerHTML='<div class="empty"><div class="empty-icon">⚠</div><div class="empty-title">Error cargando proyectos</div><div class="empty-sub">'+e.message+'</div></div>';
+  });
+}
+
+function renderProjects(projects,dayCounts,photoCounts,previews){
+  var container=document.getElementById('projectsContainer');
+  if(!projects.length){
+    container.innerHTML='<div class="empty"><div class="empty-icon">◻</div><div class="empty-title">Sin proyectos todavía</div><div class="empty-sub">Crea tu primer proyecto para empezar</div></div>';
+    return;
+  }
+  container.innerHTML='';
+  var grid=document.createElement('div');
+  grid.className='projects-grid';
+  projects.forEach(function(p){
+    var card=document.createElement('div');
+    card.className='project-card';
+
+    var days=dayCounts[p.id]||0;
+    var photoCount=photoCounts[p.id]||0;
+    var preview=previews[p.id];
+    var date=p.created_at?new Date(p.created_at).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}):'—';
+
+    var thumb_html=preview
+      ?'<img src="'+thumb(preview,400)+'" onerror="this.style.display=\'none\'">'
+      :'<span class="no-thumb">Sin fotos</span>';
+
+    card.innerHTML=
+      '<div class="project-card-thumb">'+thumb_html+'<span class="photo-count">'+photoCount+' fotos</span></div>'+
+      '<div class="project-card-body">'+
+        '<div class="project-card-name">'+(p.name||'Sin nombre')+'</div>'+
+        '<div class="project-card-meta">'+days+' días · '+date+'</div>'+
+      '</div>'+
+      '<div class="project-card-actions">'+
+        '<button class="card-btn primary" data-pid="'+p.id+'" data-action="open">Abrir admin</button>'+
+        '<button class="card-btn" data-pid="'+p.id+'" data-pname="'+(p.name||'')+'" data-action="gallery">Galería</button>'+
+        '<button class="card-btn danger" data-pid="'+p.id+'" data-pname="'+(p.name||'')+'" data-action="delete">✕</button>'+
+      '</div>';
+
+    card.querySelectorAll('[data-action]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var action=this.getAttribute('data-action');
+        var pid=this.getAttribute('data-pid');
+        var pname=this.getAttribute('data-pname')||'';
+        if(action==='open')window.location.href='/admin?p='+pid;
+        else if(action==='gallery')window.location.href='/?p='+pid;
+        else if(action==='delete')confirmDelete(pid,pname);
+      });
+    });
+
+    // Click card = open admin
+    card.addEventListener('click',function(){
+      window.location.href='/admin?p='+p.id;
+    });
+
+    grid.appendChild(card);
+  });
+  container.appendChild(grid);
+}
+
+function confirmDelete(pid,pname){
+  showModal(
+    'Borrar proyecto',
+    '¿Seguro que quieres borrar "'+pname+'"? Se borrarán todos los días, looks y fotos. Esta acción no se puede deshacer.',
+    'Borrar',
+    true,
+    function(){deleteProject(pid,pname);}
+  );
+}
+
+function deleteProject(pid,pname){
+  // Cascade: photos → looks → days → project
+  api('looks','GET','day_id=in.(select id from days where project_id=eq.'+pid+')',null)
+    .catch(function(){return[];})
+    .then(function(){
+      // Delete photos first
+      return api('photos','DELETE','look_id=in.(select id from looks where day_id in (select id from days where project_id=eq.'+pid+'))').catch(function(){});
+    })
+    .then(function(){
+      return api('looks','DELETE','day_id=in.(select id from days where project_id=eq.'+pid+')').catch(function(){});
+    })
+    .then(function(){
+      return api('days','DELETE','project_id=eq.'+pid).catch(function(){});
+    })
+    .then(function(){
+      return api('projects','DELETE','id=eq.'+pid);
+    })
+    .then(function(){
+      toast('Proyecto "'+pname+'" borrado');
+      load();
+    })
+    .catch(function(e){toast('Error: '+e.message,true);});
+}
+
+function showModal(title,desc,confirmLabel,isDanger,onConfirm,inputPlaceholder){
+  var ov=document.createElement('div');
+  ov.className='modal-overlay';
+  var inputHtml=inputPlaceholder?'<input type="text" id="modalInput" placeholder="'+inputPlaceholder+'" autocomplete="off">':'';
+  ov.innerHTML='<div class="modal"><h3>'+title+'</h3><p>'+desc+'</p>'+inputHtml+'<div class="modal-btns"><button class="modal-cancel">Cancelar</button><button class="modal-confirm'+(isDanger?' danger':'')+'">'+confirmLabel+'</button></div></div>';
+  document.body.appendChild(ov);
+  var inp=document.getElementById('modalInput');
+  if(inp)setTimeout(function(){inp.focus();},50);
+  ov.querySelector('.modal-cancel').addEventListener('click',function(){document.body.removeChild(ov);});
+  ov.querySelector('.modal-confirm').addEventListener('click',function(){
+    var val=inp?inp.value.trim():null;
+    document.body.removeChild(ov);
+    onConfirm(val);
+  });
+  if(inp){
+    inp.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){var val=inp.value.trim();document.body.removeChild(ov);onConfirm(val);}
+      if(e.key==='Escape')document.body.removeChild(ov);
+    });
+  }
+  ov.addEventListener('click',function(e){if(e.target===ov)document.body.removeChild(ov);});
+}
+
+document.getElementById('btnNew').addEventListener('click',function(){
+  showModal(
+    'Nuevo proyecto',
+    'Dale un nombre a este proyecto de sesión fotográfica.',
+    'Crear',
+    false,
+    function(name){
+      if(!name){toast('Escribe un nombre',true);return;}
+      var id=genId();
+      api('projects','POST',null,{id:id,name:name}).then(function(){
+        toast('Proyecto "'+name+'" creado');
+        window.location.href='/admin?p='+id;
+      }).catch(function(e){toast('Error: '+e.message,true);});
+    },
+    'Nombre del proyecto...'
+  );
+});
+
+// Set logo
+fetch('/logo.png').then(function(r){
+  if(r.ok)document.getElementById('vgLogo').src='/logo.png';
+}).catch(function(){});
+
+load();
+</script>
+</body>
+</html>
