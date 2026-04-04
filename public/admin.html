@@ -1,80 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VG Gallery Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px;max-width:800px;margin:0 auto}
+body{background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px;max-width:900px;margin:0 auto}
 h1{font-size:20px;font-weight:300;margin-bottom:4px}
 .sub{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
 .section{background:#111;border:.5px solid #222;border-radius:12px;padding:20px;margin-bottom:16px}
-.section h2{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px}
+.section h2{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px}
 label{display:block;font-size:11px;color:#666;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
-input[type=text],select{width:100%;background:#0a0a0a;border:.5px solid #333;border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;font-family:inherit}
+input[type=text],select{width:100%;background:#0a0a0a;border:.5px solid #333;border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:0;outline:none;font-family:inherit}
+input[type=text]:focus,select:focus{border-color:#555}
 .btn{display:inline-block;padding:10px 20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:#fff;color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn:hover{background:#ddd}
-.btn-sm{padding:8px 16px;font-size:10px;background:#222;color:#aaa;border:.5px solid #333}
-.btn-sm:hover{background:#333;color:#fff}
-.row{display:flex;gap:12px;margin-bottom:12px;align-items:flex-end}
-.row>div{flex:1}
-.drop{border:2px dashed #333;border-radius:12px;padding:60px 40px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s}
+.btn-sm{padding:7px 14px;font-size:10px;background:#1a1a1a;color:#888;border:.5px solid #333;border-radius:6px;cursor:pointer;font-family:inherit;letter-spacing:1px;text-transform:uppercase}
+.btn-sm:hover{background:#222;color:#fff}
+.btn-danger{background:#1a0505;color:#E74C3C;border-color:#3a1010}
+.btn-danger:hover{background:#2a0808;color:#ff6b6b}
+.row{display:flex;gap:10px;margin-bottom:12px;align-items:flex-end;flex-wrap:wrap}
+.row>div{flex:1;min-width:120px}
+.drop{border:2px dashed #333;border-radius:12px;padding:50px 40px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s}
 .drop:hover,.drop.over{border-color:#2ECC71}
 .drop-text{font-size:12px;color:#555;letter-spacing:2px;text-transform:uppercase}
 .drop-sub{font-size:10px;color:#333;margin-top:8px}
 .progress{height:6px;background:#222;border-radius:3px;margin-top:8px;overflow:hidden}
 .progress-bar{height:100%;background:#2ECC71;transition:width .3s;width:0%}
-.file-list{max-height:300px;overflow-y:auto;margin-top:12px}
-.file-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid #1a1a1a;font-size:11px;color:#888}
+.file-list{max-height:200px;overflow-y:auto;margin-top:10px}
+.file-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid #1a1a1a;font-size:11px;color:#888}
 .st{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:4px}
 .st.done{color:#2ECC71;background:rgba(46,204,113,.1)}
 .st.err{color:#E74C3C;background:rgba(231,76,60,.1)}
 .st.up{color:#F39C12;background:rgba(243,156,18,.1)}
-.log{background:#050505;border:.5px solid #222;border-radius:8px;padding:12px;font-size:10px;color:#666;max-height:200px;overflow-y:auto;margin-top:12px;font-family:monospace;white-space:pre-wrap;line-height:1.6}
-.existing{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:4px;margin-top:12px}
-.existing img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:#222}
-.toast{position:fixed;bottom:24px;right:24px;background:#2ECC71;color:#000;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;display:none}
+.log{background:#050505;border:.5px solid #222;border-radius:8px;padding:12px;font-size:10px;color:#666;max-height:160px;overflow-y:auto;margin-top:12px;font-family:monospace;white-space:pre-wrap;line-height:1.6}
+/* Photo grid */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px}
+.photo-card{background:#0a0a0a;border:.5px solid #222;border-radius:8px;overflow:hidden;position:relative}
+.photo-card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1a1a1a}
+.photo-card .photo-actions{display:flex;gap:4px;padding:6px;background:#0d0d0d}
+.photo-card .photo-name{font-size:9px;color:#555;padding:0 6px 6px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+/* Inline edit */
+.inline-edit{display:flex;gap:6px;align-items:center;margin-top:6px}
+.inline-edit input{flex:1;background:#0a0a0a;border:.5px solid #444;border-radius:6px;padding:6px 10px;color:#fff;font-size:12px;outline:none;font-family:inherit}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#2ECC71;color:#000;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;display:none;max-width:300px}
 .toast.show{display:block}
 .toast.error{background:#E74C3C;color:#fff}
+/* Modal confirm */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal-box{background:#111;border:.5px solid #333;border-radius:12px;padding:24px;max-width:360px;width:90%}
+.modal-box h3{font-size:15px;font-weight:400;margin-bottom:10px}
+.modal-box p{font-size:12px;color:#777;margin-bottom:20px;line-height:1.5}
+.modal-box .btns{display:flex;gap:8px;justify-content:flex-end}
 </style>
 </head>
 <body>
 <h1>VG Gallery Admin</h1>
 <div class="sub">Upload & manage photos</div>
 
+<!-- SECTION 1: Days & Looks -->
 <div class="section">
-<h2>1. Select Day & Look</h2>
-<div class="row">
-  <div><label>Day</label><select id="daySelect"></select></div>
-  <div><label>Look</label><select id="lookSelect"></select></div>
+  <h2>1. Days & Looks</h2>
+
+  <!-- Add Day -->
+  <div class="row">
+    <div style="flex:2"><label>New Day Name</label><input type="text" id="newDayName" placeholder="e.g. Day 1"></div>
+    <div style="flex:0"><button class="btn btn-sm" id="btnAddDay" style="margin-top:20px">+ Add Day</button></div>
+  </div>
+
+  <!-- Day selector + actions -->
+  <div class="row" style="align-items:center">
+    <div style="flex:2"><label>Day</label><select id="daySelect"></select></div>
+    <div style="flex:0;display:flex;gap:6px;margin-top:20px">
+      <button class="btn-sm" id="btnRenameDay">✏ Rename</button>
+      <button class="btn-sm btn-danger" id="btnDeleteDay">✕ Delete</button>
+    </div>
+  </div>
+  <div class="inline-edit" id="renameDayBox" style="display:none">
+    <input type="text" id="renameDayInput" placeholder="New day name">
+    <button class="btn-sm" id="btnRenameDayOk">Save</button>
+    <button class="btn-sm" id="btnRenameDayCancel">Cancel</button>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <!-- Add Look -->
+  <div class="row">
+    <div style="flex:2"><label>New Look Name</label><input type="text" id="newLookName" placeholder="e.g. Look 01"></div>
+    <div style="flex:0"><button class="btn btn-sm" id="btnAddLook" style="margin-top:20px">+ Add Look</button></div>
+  </div>
+
+  <!-- Look selector + actions -->
+  <div class="row" style="align-items:center">
+    <div style="flex:2"><label>Look</label><select id="lookSelect"></select></div>
+    <div style="flex:0;display:flex;gap:6px;margin-top:20px">
+      <button class="btn-sm" id="btnRenameLook">✏ Rename</button>
+      <button class="btn-sm btn-danger" id="btnDeleteLook">✕ Delete</button>
+    </div>
+  </div>
+  <div class="inline-edit" id="renameLookBox" style="display:none">
+    <input type="text" id="renameLookInput" placeholder="New look name">
+    <button class="btn-sm" id="btnRenameLookOk">Save</button>
+    <button class="btn-sm" id="btnRenameLookCancel">Cancel</button>
+  </div>
 </div>
-<div class="row">
-  <div><label>New Day Name</label><input type="text" id="newDayName" placeholder="e.g. Day 2"></div>
-  <div><button class="btn btn-sm" id="btnAddDay">+ Add Day</button></div>
-</div>
-<div class="row">
-  <div><label>New Look Name</label><input type="text" id="newLookName" placeholder="e.g. Look 02"></div>
-  <div><button class="btn btn-sm" id="btnAddLook">+ Add Look</button></div>
+
+<!-- SECTION 2: Upload -->
+<div class="section">
+  <h2>2. Upload Photos</h2>
+  <div class="drop" id="dropzone">
+    <div class="drop-text">Drop photos here or click to select</div>
+    <div class="drop-sub">JPG, PNG — Select a Day & Look first</div>
+  </div>
+  <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="file-list" id="fileList"></div>
+  <div class="log" id="log">Ready.
 </div>
 </div>
 
+<!-- SECTION 3: Photos in this look -->
 <div class="section">
-<h2>2. Upload Photos</h2>
-<div class="drop" id="dropzone">
-  <div class="drop-text">Drop photos here or click to select</div>
-  <div class="drop-sub">JPG, PNG — Select a Day & Look first</div>
-</div>
-<input type="file" id="fileInput" accept="image/*" multiple style="display:none">
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-<div class="file-list" id="fileList"></div>
-<div class="log" id="log">Ready.
-</div>
-</div>
-
-<div class="section">
-<h2>Photos in this Look</h2>
-<div id="existingPhotos"><span style="font-size:11px;color:#555">Select a day & look above</span></div>
+  <h2>Photos in this Look</h2>
+  <div id="existingPhotos"><span style="font-size:11px;color:#555">Select a day &amp; look above</span></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -82,21 +132,20 @@ input[type=text],select{width:100%;background:#0a0a0a;border:.5px solid #333;bor
 <script>
 var SB='https://rdzjbvkzpusegtyudhtn.supabase.co';
 var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkempidmt6cHVzZWd0eXVkaHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMTU0MDEsImV4cCI6MjA5MDc5MTQwMX0.25id5riBB8LHywjLcXOZC8te62MnL-LvICF6Dfv9jDI';
-var CN='dfkxnfxof';
-var CP='ut6grqjj';
+var CN='dfkxnfxof', CP='ut6grqjj';
 var PID='00000000-0000-0000-0000-000000000001';
-var days=[],aLooks={};
+var days=[], aLooks={};
 
+/* ── Utils ── */
 function L(m){var e=document.getElementById('log');e.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';e.scrollTop=9999;}
 function T(m,err){var e=document.getElementById('toast');e.textContent=m;e.className='toast show'+(err?' error':'');setTimeout(function(){e.className='toast';},3000);}
 
 function api(table,method,params,body){
-  var url=SB+'/rest/v1/'+table;
-  if(params)url+='?'+params;
+  var url=SB+'/rest/v1/'+table+(params?'?'+params:'');
   var h={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
   if(method==='POST')h['Prefer']='return=representation';
   if(method==='PATCH')h['Prefer']='return=minimal';
-  var o={method:method||'GET',headers:h};
+  var o={method:method,headers:h};
   if(body)o.body=JSON.stringify(body);
   return fetch(url,o).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error(r.status+': '+t);});
@@ -105,14 +154,34 @@ function api(table,method,params,body){
   });
 }
 
+function thumb(url,w){
+  if(!url)return '';
+  if(url.indexOf('cloudinary.com')>-1)
+    return url.replace(/\/upload\/(?:[^\/]+\/)?/,'/upload/w_'+(w||200)+',q_auto,f_auto/');
+  return url;
+}
+
+/* ── Confirm dialog ── */
+function confirm(title,msg,onOk){
+  var ov=document.createElement('div');
+  ov.className='modal-overlay';
+  ov.innerHTML='<div class="modal-box"><h3>'+title+'</h3><p>'+msg+'</p><div class="btns"><button class="btn-sm" id="mCancel">Cancelar</button><button class="btn-sm btn-danger" id="mOk">Confirmar</button></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById('mCancel').addEventListener('click',function(){document.body.removeChild(ov);});
+  document.getElementById('mOk').addEventListener('click',function(){document.body.removeChild(ov);onOk();});
+}
+
+/* ── Load ── */
 function loadData(){
-  L('Loading days...');
+  L('Cargando días...');
   api('days','GET','project_id=eq.'+PID+'&order=sort_order').then(function(d){
     days=d||[];
-    document.getElementById('daySelect').innerHTML=days.map(function(x){return '<option value="'+x.id+'">'+x.name+'</option>';}).join('');
-    L('Loaded '+days.length+' days');
+    var sel=document.getElementById('daySelect');
+    sel.innerHTML=days.map(function(x){return '<option value="'+x.id+'">'+x.name+'</option>';}).join('');
+    L(''+days.length+' días cargados');
     if(days.length)onDayChange();
-  }).catch(function(e){L('ERROR: '+e.message);T('Error loading',true);});
+    else{document.getElementById('lookSelect').innerHTML='';document.getElementById('existingPhotos').innerHTML='<span style="font-size:11px;color:#555">No hay días</span>';}
+  }).catch(function(e){L('ERROR: '+e.message);T('Error cargando',true);});
 }
 
 function onDayChange(){
@@ -121,74 +190,248 @@ function onDayChange(){
   api('looks','GET','day_id=eq.'+did+'&order=sort_order').then(function(lk){
     aLooks[did]=lk||[];
     document.getElementById('lookSelect').innerHTML=(lk||[]).map(function(x){return '<option value="'+x.id+'">'+x.name+'</option>';}).join('');
-    L('Loaded '+(lk||[]).length+' looks');
+    L(''+(lk||[]).length+' looks cargados');
     loadPhotos();
   }).catch(function(e){L('ERROR: '+e.message);});
 }
 
 function loadPhotos(){
   var lid=document.getElementById('lookSelect').value;
-  if(!lid)return;
-  api('photos','GET','look_id=eq.'+lid+'&order=sort_order').then(function(p){
-    var el=document.getElementById('existingPhotos');
-    if(!p||!p.length){el.innerHTML='<span style="color:#555;font-size:11px">No photos yet</span>';return;}
-    el.innerHTML='<div style="color:#555;font-size:10px;margin-bottom:8px">'+p.length+' photos</div><div class="existing">'+p.map(function(x){var u=x.url;if(u&&u.indexOf('cloudinary')>-1)u=u.replace('/upload/','/upload/w_100,q_auto,f_auto/');return '<img src="'+u+'" loading="lazy"/>';}).join('')+'</div>';
+  var el=document.getElementById('existingPhotos');
+  if(!lid){el.innerHTML='<span style="font-size:11px;color:#555">Selecciona un look</span>';return;}
+  api('photos','GET','look_id=eq.'+lid+'&order=sort_order').then(function(photos){
+    el.innerHTML='';
+    if(!photos||!photos.length){
+      el.innerHTML='<span style="font-size:11px;color:#555">No hay fotos</span>';
+      return;
+    }
+    var header=document.createElement('div');
+    header.style.cssText='font-size:10px;color:#555;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase';
+    header.textContent=photos.length+' foto'+(photos.length!==1?'s':'');
+    el.appendChild(header);
+
+    var grid=document.createElement('div');
+    grid.className='photo-grid';
+    photos.forEach(function(p){
+      var card=document.createElement('div');
+      card.className='photo-card';
+
+      var img=document.createElement('img');
+      img.src=thumb(p.url,200);
+      img.alt=p.label||'';
+      card.appendChild(img);
+
+      var name=document.createElement('div');
+      name.className='photo-name';
+      name.title=p.label||'';
+      name.textContent=p.label||'—';
+      card.appendChild(name);
+
+      var actions=document.createElement('div');
+      actions.className='photo-actions';
+
+      // Replace button
+      var replBtn=document.createElement('button');
+      replBtn.className='btn-sm';
+      replBtn.style.flex='1';
+      replBtn.textContent='↺ Reemplazar';
+      replBtn.addEventListener('click',function(){replacePhoto(p,img);});
+      actions.appendChild(replBtn);
+
+      // Delete button
+      var delBtn=document.createElement('button');
+      delBtn.className='btn-sm btn-danger';
+      delBtn.style.flex='1';
+      delBtn.textContent='✕ Borrar';
+      delBtn.addEventListener('click',function(){deletePhoto(p,card);});
+      actions.appendChild(delBtn);
+
+      card.appendChild(actions);
+      grid.appendChild(card);
+    });
+    el.appendChild(grid);
   }).catch(function(e){L('ERROR: '+e.message);});
 }
 
+/* ── Delete photo ── */
+function deletePhoto(photo,card){
+  confirm('Borrar foto','¿Seguro que quieres borrar "'+( photo.label||'esta foto')+'"? Esta acción no se puede deshacer.',function(){
+    L('Borrando: '+photo.label);
+    api('photos','DELETE','id=eq.'+photo.id).then(function(){
+      T('Foto borrada');
+      L('Borrada: '+photo.label);
+      card.style.opacity='0.3';
+      card.style.pointerEvents='none';
+      setTimeout(function(){if(card.parentNode)card.parentNode.removeChild(card);},500);
+    }).catch(function(e){L('ERROR: '+e.message);T('Error al borrar',true);});
+  });
+}
+
+/* ── Replace photo ── */
+function replacePhoto(photo,imgEl){
+  var input=document.createElement('input');
+  input.type='file';input.accept='image/*';
+  input.addEventListener('change',function(){
+    if(!input.files||!input.files[0])return;
+    var file=input.files[0];
+    L('Reemplazando: '+photo.label);
+    T('Subiendo...');
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CP);
+    fetch('https://api.cloudinary.com/v1_1/'+CN+'/image/upload',{method:'POST',body:fd})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.error)throw new Error(data.error.message);
+      return api('photos','PATCH','id=eq.'+photo.id,{url:data.secure_url});
+    })
+    .then(function(){
+      photo.url=arguments[0]&&arguments[0].url||photo.url;
+      imgEl.src=thumb(data&&data.secure_url||photo.url,200)+'?t='+Date.now();
+      T('Foto reemplazada');
+      L('OK reemplazada: '+photo.label);
+      loadPhotos();
+    })
+    .catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+  });
+  input.click();
+}
+
+/* ── Add Day ── */
 document.getElementById('btnAddDay').addEventListener('click',function(){
   var name=document.getElementById('newDayName').value.trim();
-  if(!name){T('Enter a day name',true);return;}
-  L('Creating day: '+name);
+  if(!name){T('Escribe un nombre',true);return;}
   api('days','POST',null,{project_id:PID,name:name,sort_order:days.length}).then(function(){
-    T('Day "'+name+'" created!');L('Day created');
+    T('Día "'+name+'" creado');
     document.getElementById('newDayName').value='';
     loadData();
   }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
 });
 
+/* ── Rename Day ── */
+document.getElementById('btnRenameDay').addEventListener('click',function(){
+  var did=document.getElementById('daySelect').value;
+  if(!did){T('Selecciona un día',true);return;}
+  var d=days.find(function(x){return x.id===did;});
+  document.getElementById('renameDayInput').value=d?d.name:'';
+  document.getElementById('renameDayBox').style.display='flex';
+  document.getElementById('renameDayInput').focus();
+});
+document.getElementById('btnRenameDayCancel').addEventListener('click',function(){
+  document.getElementById('renameDayBox').style.display='none';
+});
+document.getElementById('btnRenameDayOk').addEventListener('click',function(){
+  var did=document.getElementById('daySelect').value;
+  var name=document.getElementById('renameDayInput').value.trim();
+  if(!name){T('Escribe un nombre',true);return;}
+  api('days','PATCH','id=eq.'+did,{name:name}).then(function(){
+    T('Día renombrado a "'+name+'"');
+    document.getElementById('renameDayBox').style.display='none';
+    loadData();
+  }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+});
+
+/* ── Delete Day ── */
+document.getElementById('btnDeleteDay').addEventListener('click',function(){
+  var did=document.getElementById('daySelect').value;
+  if(!did){T('Selecciona un día',true);return;}
+  var d=days.find(function(x){return x.id===did;});
+  confirm('Borrar día','¿Borrar el día "'+(d?d.name:'')+'" y todos sus looks y fotos?',function(){
+    // delete all photos in all looks of this day first
+    var looks=aLooks[did]||[];
+    var delPhotos=looks.map(function(l){
+      return api('photos','DELETE','look_id=eq.'+l.id).catch(function(){});
+    });
+    Promise.all(delPhotos).then(function(){
+      return Promise.all(looks.map(function(l){return api('looks','DELETE','id=eq.'+l.id).catch(function(){});}));
+    }).then(function(){
+      return api('days','DELETE','id=eq.'+did);
+    }).then(function(){
+      T('Día borrado');L('Día borrado: '+(d?d.name:''));
+      loadData();
+    }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+  });
+});
+
+/* ── Add Look ── */
 document.getElementById('btnAddLook').addEventListener('click',function(){
   var did=document.getElementById('daySelect').value;
   var name=document.getElementById('newLookName').value.trim();
-  if(!did){T('Select a day first',true);return;}
-  if(!name){T('Enter a look name',true);return;}
-  L('Creating look: '+name);
+  if(!did){T('Selecciona un día primero',true);return;}
+  if(!name){T('Escribe un nombre',true);return;}
   api('looks','POST',null,{day_id:did,name:name,sort_order:(aLooks[did]||[]).length}).then(function(){
-    T('Look "'+name+'" created!');L('Look created');
+    T('Look "'+name+'" creado');
     document.getElementById('newLookName').value='';
     onDayChange();
   }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
 });
 
-document.getElementById('daySelect').addEventListener('change',onDayChange);
-document.getElementById('lookSelect').addEventListener('change',loadPhotos);
+/* ── Rename Look ── */
+document.getElementById('btnRenameLook').addEventListener('click',function(){
+  var lid=document.getElementById('lookSelect').value;
+  var did=document.getElementById('daySelect').value;
+  if(!lid){T('Selecciona un look',true);return;}
+  var lk=(aLooks[did]||[]).find(function(x){return x.id===lid;});
+  document.getElementById('renameLookInput').value=lk?lk.name:'';
+  document.getElementById('renameLookBox').style.display='flex';
+  document.getElementById('renameLookInput').focus();
+});
+document.getElementById('btnRenameLookCancel').addEventListener('click',function(){
+  document.getElementById('renameLookBox').style.display='none';
+});
+document.getElementById('btnRenameLookOk').addEventListener('click',function(){
+  var lid=document.getElementById('lookSelect').value;
+  var name=document.getElementById('renameLookInput').value.trim();
+  if(!name){T('Escribe un nombre',true);return;}
+  api('looks','PATCH','id=eq.'+lid,{name:name}).then(function(){
+    T('Look renombrado a "'+name+'"');
+    document.getElementById('renameLookBox').style.display='none';
+    onDayChange();
+  }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+});
 
+/* ── Delete Look ── */
+document.getElementById('btnDeleteLook').addEventListener('click',function(){
+  var lid=document.getElementById('lookSelect').value;
+  var did=document.getElementById('daySelect').value;
+  if(!lid){T('Selecciona un look',true);return;}
+  var lk=(aLooks[did]||[]).find(function(x){return x.id===lid;});
+  confirm('Borrar look','¿Borrar el look "'+(lk?lk.name:'')+'" y todas sus fotos?',function(){
+    api('photos','DELETE','look_id=eq.'+lid).catch(function(){}).then(function(){
+      return api('looks','DELETE','id=eq.'+lid);
+    }).then(function(){
+      T('Look borrado');L('Look borrado: '+(lk?lk.name:''));
+      onDayChange();
+    }).catch(function(e){L('ERROR: '+e.message);T('Error: '+e.message,true);});
+  });
+});
+
+/* ── Upload ── */
 var dz=document.getElementById('dropzone');
 var fi=document.getElementById('fileInput');
 dz.addEventListener('click',function(){fi.click();});
 dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
 dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
 dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');doUpload(e.dataTransfer.files);});
-fi.addEventListener('change',function(){if(fi.files.length)doUpload(fi.files);});
+fi.addEventListener('change',function(){if(fi.files.length)doUpload(fi.files);fi.value='';});
 
 function doUpload(files){
   var did=document.getElementById('daySelect').value;
   var lid=document.getElementById('lookSelect').value;
-  if(!did||!lid){T('Select Day & Look first!',true);return;}
+  if(!did||!lid){T('Selecciona Day & Look primero',true);return;}
   var list=document.getElementById('fileList');
   var bar=document.getElementById('progressBar');
   var total=files.length,done=0;
   list.innerHTML='';bar.style.width='0%';
-  L('Uploading '+total+' photos...');
+  L('Subiendo '+total+' fotos...');
   for(var i=0;i<total;i++){
     (function(file,idx){
       var item=document.createElement('div');
       item.className='file-item';
-      item.innerHTML='<span>'+file.name+'</span><span class="st up">uploading</span>';
+      item.innerHTML='<span>'+file.name+'</span><span class="st up">subiendo</span>';
       list.appendChild(item);
       var fd=new FormData();
-      fd.append('file',file);
-      fd.append('upload_preset',CP);
+      fd.append('file',file);fd.append('upload_preset',CP);
       fetch('https://api.cloudinary.com/v1_1/'+CN+'/image/upload',{method:'POST',body:fd})
       .then(function(r){if(!r.ok)throw new Error('Cloudinary '+r.status);return r.json();})
       .then(function(data){
@@ -197,13 +440,15 @@ function doUpload(files){
         return api('photos','POST',null,{look_id:lid,day_id:did,url:data.secure_url,label:file.name.replace(/\.[^.]+$/,''),sort_order:idx,stars:0});
       })
       .then(function(){
-        item.querySelector('.st').className='st done';item.querySelector('.st').textContent='done';
+        item.querySelector('.st').className='st done';
+        item.querySelector('.st').textContent='ok';
         done++;bar.style.width=Math.round(done/total*100)+'%';
-        L('OK '+file.name);
-        if(done===total){T(total+' photos uploaded!');loadPhotos();}
+        L('OK: '+file.name);
+        if(done===total){T(total+' fotos subidas!');loadPhotos();}
       })
       .catch(function(e){
-        item.querySelector('.st').className='st err';item.querySelector('.st').textContent='error';
+        item.querySelector('.st').className='st err';
+        item.querySelector('.st').textContent='error';
         done++;bar.style.width=Math.round(done/total*100)+'%';
         L('FAIL '+file.name+': '+e.message);T(e.message,true);
       });
@@ -211,8 +456,14 @@ function doUpload(files){
   }
 }
 
+/* ── Keyboard shortcuts ── */
 document.getElementById('newDayName').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnAddDay').click();});
 document.getElementById('newLookName').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnAddLook').click();});
+document.getElementById('renameDayInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnRenameDayOk').click();if(e.key==='Escape')document.getElementById('btnRenameDayCancel').click();});
+document.getElementById('renameLookInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btnRenameLookOk').click();if(e.key==='Escape')document.getElementById('btnRenameLookCancel').click();});
+
+document.getElementById('daySelect').addEventListener('change',onDayChange);
+document.getElementById('lookSelect').addEventListener('change',loadPhotos);
 
 loadData();
 </script>
