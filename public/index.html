@@ -217,12 +217,13 @@ function makeGrid(photos){
     var st=parseInt(p.stars)||0;
 
     var card=el('div','background:#000;cursor:pointer');
-    var imgWrap=el('div','aspect-ratio:3/2;position:relative;overflow:hidden;background:#111');
+    var imgWrap=el('div','position:relative;overflow:hidden;background:#111;min-height:120px');
 
     if(p.url){
-      var img=el('img','position:absolute;inset:0;width:100%;height:100%;object-fit:cover');
-      img.src=thumb(p.url,1000);
+      var img=new Image();
+      img.style.cssText='width:100%;height:auto;display:block';
       img.onerror=function(){this.style.opacity='0.1';};
+      img.src=thumb(p.url,1000);
       imgWrap.appendChild(img);
     }
     if(col>=0){
