@@ -1,7 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/projects", "destination": "/projects.html" },
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/", "destination": "/index.html" }
+  "routes": [
+    { "src": "/projects", "dest": "/projects.html" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/", "dest": "/index.html" }
   ]
 }
