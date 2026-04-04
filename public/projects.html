@@ -145,7 +145,7 @@ var projects=[];
 
 function load(){
   Promise.all([
-    api('projects','GET','order=created_at.desc'),
+    api('projects','GET','order=id.desc'),
     api('days','GET','order=project_id'),
     api('photos','GET','select=id,project_id,look_id,url&order=id.desc&limit=200')
   ]).then(function(r){
@@ -280,7 +280,7 @@ function deleteProject(pid,pname){
       toast('Proyecto "'+pname+'" borrado');
       load();
     })
-    .catch(function(e){toast('Error: '+e.message,true);});
+    .catch(function(e){toast('Error: '+e.message+' — ¿Ejecutaste el SQL en Supabase?',true);});
 }
 
 function showModal(title,desc,confirmLabel,isDanger,onConfirm,inputPlaceholder){
@@ -323,7 +323,7 @@ document.getElementById('btnNew').addEventListener('click',function(){
       api('projects','POST',null,{id:id,name:name,slug:slug}).then(function(){
         toast('Proyecto "'+name+'" creado');
         window.location.href='/admin?p='+id;
-      }).catch(function(e){toast('Error: '+e.message,true);});
+      }).catch(function(e){toast('Error: '+e.message+' — ¿Ejecutaste el SQL en Supabase?',true);});
     },
     'Nombre del proyecto...'
   );
