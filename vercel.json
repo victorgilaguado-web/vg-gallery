@@ -3,6 +3,7 @@
   "routes": [
     { "src": "/projects", "dest": "/projects.html" },
     { "src": "/admin", "dest": "/admin.html" },
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
