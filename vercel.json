@@ -1,7 +1,7 @@
 {
   "routes": [
-    { "src": "/projects", "dest": "/projects.html" },
-    { "src": "/admin", "dest": "/admin.html" },
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/projects", "dest": "/public/projects.html" },
+    { "src": "/admin", "dest": "/public/admin.html" },
+    { "src": "/", "dest": "/public/index.html" }
   ]
 }
