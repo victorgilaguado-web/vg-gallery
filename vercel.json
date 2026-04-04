@@ -1,1 +1,8 @@
-{ "src": "/projects", "dest": "/public/projects.html" }
+{
+  "outputDirectory": "public",
+  "routes": [
+    { "src": "/projects", "dest": "/projects.html" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/", "dest": "/index.html" }
+  ]
+}
